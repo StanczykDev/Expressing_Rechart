@@ -4,7 +4,7 @@ const webpack = require("webpack");
 const ROOT_DIRECTORY = path.resolve(__dirname, '..');
 
 module.exports = {
-  entry: "./src/index.js",
+  entry: ["babel-polyfill", "./src/index.js"],
   mode: "development",
   module: {
     rules: [
@@ -27,10 +27,20 @@ module.exports = {
     filename: "bundle.js"
   },
   devServer: {
+    historyApiFallback: true,
+    hot: true,
+    inline: true,
     contentBase: path.join(ROOT_DIRECTORY, "public/"),
     port: 3000,
     publicPath: "http://localhost:3000/dist/",
-    hotOnly: true
+    hotOnly: true,
+    proxy: {
+      '/api': {
+        target: "http://[::1]:3001",
+        secure: false,
+        changeOrigin: true
+      }
+    }
   },
   plugins: [new webpack.HotModuleReplacementPlugin()]
 };
