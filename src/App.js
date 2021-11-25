@@ -1,30 +1,41 @@
-import React, { Component } from "react";
-import { hot } from "react-hot-loader";
+import { hot } from "react-hot-loader/root";
+import React, { useState } from "react";
+
 import "./App.css";
 
-class App extends Component{
-  componentDidMount() {
-    this.init();
-  }
+const App = () => {
+  const [message, setMessage] = useState("");
 
-  init = async () => {
-    const response = await fetch("api", {
+
+  const init = async () => {
+    const response = await fetch("api/message", {
       method: "GET"
     });
 
     const message = await response.json();
 
-    console.log(message.text);
+    setMessage(message.text);
   }
 
-  render(){
+  const getAnotherMessage = async () => {
+    const response = await fetch("api/anotherMessage", {
+      method: "GET"
+    });
+
+    const message = await response.json();
+
+    setMessage(message.text);
+  }
+
     return(
       <div className="App">
-        <button onClick={this.init}>Send Request</button>
-        <h1> Hardcoded front message </h1>
+        <button onClick={init}>Send Request</button>
+        <button onClick={getAnotherMessage}>Send Another Request</button>
+        <h1>Hardcoded front message</h1>
+        <h2>{message}</h2>
       </div>
     );
-  }
 }
 
-export default hot(module)(App);
+export default hot(App);
+

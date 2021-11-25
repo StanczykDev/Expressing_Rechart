@@ -27,13 +27,10 @@ module.exports = {
     filename: "bundle.js"
   },
   devServer: {
-    historyApiFallback: true,
     hot: true,
-    inline: true,
     contentBase: path.join(ROOT_DIRECTORY, "public/"),
     port: 3000,
     publicPath: "http://localhost:3000/dist/",
-    hotOnly: true,
     proxy: {
       '/api': {
         target: "http://[::1]:3001",
