@@ -1,3 +1,5 @@
+import { TableColumns } from "./TableColumns";
+
 const express = require('express')
 const app = express()
 const port = 3001
