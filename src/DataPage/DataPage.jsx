@@ -4,8 +4,10 @@ import { TableWithButton } from "./Components/TableWithButton";
 
 import { DataPageService } from "./DataPageService";
 
-import { TABLES_IDS } from "../../consts/TablesIdentificators";
-
+const TABLES_IDS = {
+    VALUES: "VALUES",
+    ACTORS: "ACTORS"
+};
 
 const VALUES_BUTTON_TEXT = "Get random values";
 const ACTORS_BUTTON_TEXT = "Get random actors";

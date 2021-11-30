@@ -1,8 +1,8 @@
-import { TableColumns } from "./TableColumns";
-
 const express = require('express')
 const app = express()
 const port = 3001
+const { COLUMNS } = require('./TablesColumns');
+const { ENDPOINTS } = require('./TablesEndpoints');
 
 app.get('/api', (req, res) => {
     console.log("Getting request");

@@ -1,6 +1,8 @@
-import { TABLES_IDS } from "../consts/TablesIdentificators";
+const TableIdentificators = require("./consts/TablesIdentificators");
 
-export const TablesEndpoints = [
+const TABLES_IDS = TableIdentificators.TABLES_IDS;
+
+const ENDPOINTS = [
     {
         method: "get",
         endpoint: `/${TABLES_IDS.VALUES}/data`,
@@ -20,3 +22,7 @@ export const TablesEndpoints = [
         }
     }
 ]
+
+module.exports = {
+    ENDPOINTS
+}
