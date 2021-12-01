@@ -1,8 +1,8 @@
 const express = require('express')
 const app = express()
 const port = 3001
-const { COLUMNS } = require('./TablesColumns');
-const { ENDPOINTS } = require('./TablesEndpoints');
+const TablesEndpoints = require("./TablesEndpoints");
+const { ENDPOINTS } = TablesEndpoints;
 
 app.get('/api', (req, res) => {
     console.log("Getting request");
@@ -19,6 +19,11 @@ app.get('/api/anotherMessage', (req, res) => {
     res.json({
         text: "Also Some Message"
     })
+})
+
+ENDPOINTS.forEach(endpoint => {
+    // console.log(endpoint);
+    app[endpoint.method](endpoint.endpoint, endpoint.callback);
 })
 
 app.listen(port, () => {

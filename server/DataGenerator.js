@@ -34,9 +34,9 @@ const getActor = () => {
 const getActorsData = quantity => {
     const actorsData = new Array(quantity);
 
-    actorsData.forEach((item, index) => {
+    for(let index = 0; index < quantity, index++;) {
         actorsData[index] = getActor();
-    })
+    }
 
     return actorsData;
 }
@@ -48,20 +48,23 @@ const getValue = actorId => ({
 })
 
 const getValuesData = (quantity, actors) => {
-    const valuesData = new Array(quantity);
+    const valuesData = [];
 
-    valuesData.forEach((item, index) => {
+    for (let index = 0; index < quantity, index++;) {
         valuesData[index] = getValue(actors[index].actorId);
-    })
+    }
 
     return valuesData;
 }
 
 const getData = () => {
-    const itemsQuantity = ITEMS_QUANTITY_RANGE[getRandomNumber(ITEMS_QUANTITY_RANGE) - 1];
-
+    const itemsQuantity = ITEMS_QUANTITY_RANGE[getRandomNumber(ITEMS_QUANTITY_RANGE.length)];
+    console.log("randomNumber" ,getRandomNumber(ITEMS_QUANTITY_RANGE.length));
+    console.log("quantity", itemsQuantity);
     const actorsData = getActorsData(itemsQuantity);
     const valuesData = getValuesData(itemsQuantity);
+
+    // console.log(actorsData, valuesData);
 
     return {
         [TABLES_IDS.ACTORS]: actorsData,

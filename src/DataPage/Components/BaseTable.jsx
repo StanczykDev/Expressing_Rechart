@@ -1,24 +1,37 @@
-import React from "react";
-import { useTable } from "react-table/src/hooks/useTable";
+import React, {useEffect, useState } from "react";
+import { useTable } from "react-table";
 
-export const  BaseTable = ({ columns, data }) => {
-    // Use the state and functions returned from useTable to build your UI
+export const  BaseTable = ({ columns = [], data = []}) => {
+    const [tableProps, setTableProps] = useState([]);
+    const [tableBodyProps, setTableBodyProps] = useState([]);
+    const [tableHeaderGroups, setTableHeaderGroups] = useState([]);
+    const [tableRows, setTableRows] = useState([]);
+
     const {
         getTableProps,
         getTableBodyProps,
         headerGroups,
         rows,
-        prepareRow,
+        prepareRow
     } = useTable({
         columns,
         data,
     })
 
-    // Render the UI for your table
+    useEffect(() => {
+        setTableProps(getTableProps());
+        setTableBodyProps(getTableBodyProps());
+        setTableHeaderGroups(headerGroups);
+        setTableRows(rows);
+
+
+    }, [columns, data])
+
+
     return (
-        <table {...getTableProps()}>
+        <table {...tableProps}>
             <thead>
-            {headerGroups.map(headerGroup => (
+            {tableHeaderGroups.map(headerGroup => (
                 <tr {...headerGroup.getHeaderGroupProps()}>
                     {headerGroup.headers.map(column => (
                         <th {...column.getHeaderProps()}>{column.render('Header')}</th>
@@ -26,8 +39,8 @@ export const  BaseTable = ({ columns, data }) => {
                 </tr>
             ))}
             </thead>
-            <tbody {...getTableBodyProps()}>
-            {rows.map((row, i) => {
+            <tbody {...tableBodyProps}>
+            {tableRows.map((row, i) => {
                 prepareRow(row)
                 return (
                     <tr {...row.getRowProps()}>
