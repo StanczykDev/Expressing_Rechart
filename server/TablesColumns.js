@@ -1,29 +1,29 @@
 const COLUMNS = {
     VALUES: [
         {
-            header: "VALUE 1",
+            Header: "VALUE 1",
             accessor: "valueOne"
         },
         {
-            header: "VALUE 2",
+            Header: "VALUE 2",
             accessor: "valueTwo"
         },
         {
-            header: "ACTOR ID",
+            Header: "ACTOR ID",
             accessor: "actorId"
         }
     ],
     ACTORS: [
         {
-            header: "ACTOR NAME",
+            Header: "ACTOR NAME",
             accessor: "actorName"
         },
         {
-            header: "ACTOR COLOR",
+            Header: "ACTOR COLOR",
             accessor: "actorColor"
         },
         {
-            header: "ACTOR ID",
+            Header: "ACTOR ID",
             accessor: "actorId"
         }
     ]

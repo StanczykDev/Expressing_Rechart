@@ -2,7 +2,11 @@ const express = require('express')
 const app = express()
 const port = 3001
 const TablesEndpoints = require("./TablesEndpoints");
+const DataGenerator = require("./DataGenerator")
+
 const { ENDPOINTS } = TablesEndpoints;
+const { getRandomData } = DataGenerator;
+
 
 app.get('/api', (req, res) => {
     console.log("Getting request");
@@ -21,9 +25,26 @@ app.get('/api/anotherMessage', (req, res) => {
     })
 })
 
-ENDPOINTS.forEach(endpoint => {
-    // console.log(endpoint);
-    app[endpoint.method](endpoint.endpoint, endpoint.callback);
+let cachedData = null;
+
+const getDataCallbackProxy = dataCallback => {
+    if (!cachedData) {
+        cachedData = getRandomData();
+    }
+
+    return (res, req) => dataCallback(res, req, cachedData);
+}
+
+ENDPOINTS.forEach(endpointDescriptor => {
+    const { method, endpoint } = endpointDescriptor;
+    let callback = endpointDescriptor.callback;
+
+    if (endpoint.split('/')[2] === "tablesData") {
+        console.log("Yup");
+        callback = getDataCallbackProxy(callback);
+    }
+
+    app[method](endpoint, callback);
 })
 
 app.listen(port, () => {

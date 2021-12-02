@@ -4,17 +4,15 @@ const DataGenerator = require("./DataGenerator")
 
 const { TABLES_IDS } = TablesIdentificators;
 const { COLUMNS } = TablesColumns;
-const { getRandomData } = DataGenerator;
 
 const ENDPOINTS = [
     {
         method: "get",
         endpoint: "/api/tablesData",
-        callback: (req, res) => {
-            const randomData = getRandomData();
+        callback: (req, res, data) => {
             res.json({
-                valuesData: randomData[TABLES_IDS.VALUES],
-                actorsData: randomData[TABLES_IDS.ACTORS]
+                valuesData: data[TABLES_IDS.VALUES],
+                actorsData: data[TABLES_IDS.ACTORS]
             });
         }
     },

@@ -1,14 +1,15 @@
 import React, {useState, useEffect, useMemo} from "react";
 
-import { TableWithButton } from "./Components/TableWithButton";
 
 import { DataPageService } from "./DataPageService";
-import {BaseTable} from "./Components/BaseTable";
+import { BaseTable } from "./Components/BaseTable";
 
 const TABLES_IDS = {
     VALUES: "VALUES",
     ACTORS: "ACTORS"
 };
+
+import "./DataPage.css";
 
 const VALUES_BUTTON_TEXT = "Get random values";
 const ACTORS_BUTTON_TEXT = "Get random actors";
@@ -18,19 +19,22 @@ export const DataPage = () => {
         valuesColumns: [],
         actorsColumns: [],
         valuesData: [],
-        actorsData: []
+        actorsData: [],
+        requestCounter: 0
     }
 
     const [state, setState] = useState(initialState);
 
     const getColumns = async id => {
-        console.log("Getting columns")
-        return await DataPageService.fetchColumns(id);
+        const response = await DataPageService.fetchColumns(id);
+
+        return (await response.json()).columns;
     };
 
     const getData = async () => {
-        console.log("Getting data")
-        return await DataPageService.fetchData();
+        const response = await DataPageService.fetchData();
+
+        return await response.json();
     };
 
     useEffect(() => {
@@ -40,7 +44,8 @@ export const DataPage = () => {
             const { valuesData, actorsData } = await getData();
 
             setState(state => ({
-                ...state, valuesColumns, actorsColumns, valuesData, actorsData
+                ...state, valuesColumns, actorsColumns, valuesData, actorsData,
+                 requestCounter: state.requestCounter + 1
             }))
         }
 
@@ -59,17 +64,23 @@ export const DataPage = () => {
         data: state[`${id.toLowerCase()}Data`]
     })
 
-    const valuesTableProps = useMemo(() => deriveTableProps(TABLES_IDS.VALUES), [TABLES_IDS.VALUES]);
-    const actorsTableProps = useMemo(() => deriveTableProps(TABLES_IDS.ACTORS), [TABLES_IDS.ACTORS]);
+    const valuesTableProps = useMemo(() => deriveTableProps(TABLES_IDS.VALUES),
+        [state.requestCounter]);
+    const actorsTableProps = useMemo(() => deriveTableProps(TABLES_IDS.ACTORS),
+        [state.requestCounter]);
 
+    console.log(valuesTableProps);
+    console.log(actorsTableProps);
 
     return <div>
         <button onClick={setData}>Get Random Data</button>
-        <BaseTable
-            {...valuesTableProps}
-        />
-        <BaseTable
-            {...actorsTableProps}
-        />
+        <div className="tablesContainer">
+            <BaseTable
+                {...valuesTableProps}
+            />
+            <BaseTable
+                {...actorsTableProps}
+            />
+        </div>
     </div>;
 }

@@ -1,7 +1,11 @@
 import React, {useEffect, useState } from "react";
 import { useTable } from "react-table";
 
+import "./BaseTable.css";
+
 export const  BaseTable = ({ columns = [], data = []}) => {
+    // console.log(columns);
+    // console.log(data);
     const [tableProps, setTableProps] = useState([]);
     const [tableBodyProps, setTableBodyProps] = useState([]);
     const [tableHeaderGroups, setTableHeaderGroups] = useState([]);
@@ -33,9 +37,11 @@ export const  BaseTable = ({ columns = [], data = []}) => {
             <thead>
             {tableHeaderGroups.map(headerGroup => (
                 <tr {...headerGroup.getHeaderGroupProps()}>
-                    {headerGroup.headers.map(column => (
-                        <th {...column.getHeaderProps()}>{column.render('Header')}</th>
-                    ))}
+                    {headerGroup.headers.map(column => {
+                        console.log(column);
+                        console.log(column.getHeaderProps());
+                        return <th {...column.getHeaderProps()}>{column.render('Header')}</th>
+                    })}
                 </tr>
             ))}
             </thead>

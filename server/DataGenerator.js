@@ -15,12 +15,12 @@ const getRandomNumber = max => Math.floor(Math.random() * max);
 const getActor = () => {
     const actor = {
         actorName: "",
-        actorColor: COLORS_RANGE[getRandomNumber(COLORS_RANGE.length) - 1],
+        actorColor: COLORS_RANGE[getRandomNumber(COLORS_RANGE.length)],
         actorId: uuid4()
     };
 
-    const actorNamePrefix = NAME_PREFIX[getRandomNumber(NAME_PREFIX.length) - 1];
-    const actorNamePostfix = NAME_POSTFIX[getRandomNumber(NAME_POSTFIX.length) - 1];
+    const actorNamePrefix = NAME_PREFIX[getRandomNumber(NAME_PREFIX.length)];
+    const actorNamePostfix = NAME_POSTFIX[getRandomNumber(NAME_POSTFIX.length)];
 
     if (actorNamePrefix === actorNamePostfix) {
         actor.actorName = `True ${actorNamePostfix}`;
@@ -28,14 +28,18 @@ const getActor = () => {
         actor.actorName = `${actorNamePrefix} ${actorNamePostfix}`;
     }
 
+    console.log(actor);
+
     return actor
 }
 
 const getActorsData = quantity => {
-    const actorsData = new Array(quantity);
+    const actorsData = [];
 
-    for(let index = 0; index < quantity, index++;) {
-        actorsData[index] = getActor();
+    console.log(quantity);
+
+    for (let index = 0; index < quantity; index += 1) {
+        actorsData.push(getActor());
     }
 
     return actorsData;
@@ -50,8 +54,8 @@ const getValue = actorId => ({
 const getValuesData = (quantity, actors) => {
     const valuesData = [];
 
-    for (let index = 0; index < quantity, index++;) {
-        valuesData[index] = getValue(actors[index].actorId);
+    for (let index = 0; index < quantity; index += 1) {
+        valuesData.push(getValue(actors[index].actorId));
     }
 
     return valuesData;
@@ -59,12 +63,9 @@ const getValuesData = (quantity, actors) => {
 
 const getData = () => {
     const itemsQuantity = ITEMS_QUANTITY_RANGE[getRandomNumber(ITEMS_QUANTITY_RANGE.length)];
-    console.log("randomNumber" ,getRandomNumber(ITEMS_QUANTITY_RANGE.length));
-    console.log("quantity", itemsQuantity);
-    const actorsData = getActorsData(itemsQuantity);
-    const valuesData = getValuesData(itemsQuantity);
 
-    // console.log(actorsData, valuesData);
+    const actorsData = getActorsData(itemsQuantity);
+    const valuesData = getValuesData(itemsQuantity, actorsData);
 
     return {
         [TABLES_IDS.ACTORS]: actorsData,
