@@ -7,7 +7,7 @@ const { COLUMNS } = TablesColumns;
 
 const ENDPOINTS = [
     {
-        method: "get",
+        method: "put",
         endpoint: "/api/tablesData",
         callback: (req, res, data) => {
             res.json({

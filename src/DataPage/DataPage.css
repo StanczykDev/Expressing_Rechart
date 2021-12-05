@@ -1,7 +1,17 @@
+.dataPageContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .tablesContainer {
     width: 100%;
     display: flex;
     justify-content: space-around;
 
     margin-top: 20px;
+}
+
+.graphContainer {
+    margin-top: 50px;
 }

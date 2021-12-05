@@ -1,8 +1,9 @@
-import React, {useState, useEffect, useMemo} from "react";
+import React, { useState, useEffect, useMemo } from "react";
 
 
 import { DataPageService } from "./DataPageService";
 import { BaseTable } from "./Components/BaseTable";
+import { Graph } from "./Components/Graph";
 
 const TABLES_IDS = {
     VALUES: "VALUES",
@@ -31,49 +32,62 @@ export const DataPage = () => {
         return (await response.json()).columns;
     };
 
-    const getData = async () => {
-        const response = await DataPageService.fetchData();
+    const getData = async (update = false) => {
+        const response = await DataPageService.fetchData(update);
 
         return await response.json();
     };
 
+    const fetchTableData = async (update = false) => {
+        const valuesColumns = await getColumns(TABLES_IDS.VALUES);
+        const actorsColumns = await getColumns(TABLES_IDS.ACTORS);
+        const { valuesData, actorsData } = await getData(update);
+
+        setState(state => ({
+            ...state, valuesColumns, actorsColumns, valuesData, actorsData,
+            requestCounter: state.requestCounter + 1
+        }))
+    }
+
     useEffect(() => {
-        const fetchTableData = async () => {
-            const valuesColumns = await getColumns(TABLES_IDS.VALUES);
-            const actorsColumns = await getColumns(TABLES_IDS.ACTORS);
-            const { valuesData, actorsData } = await getData();
-
-            setState(state => ({
-                ...state, valuesColumns, actorsColumns, valuesData, actorsData,
-                 requestCounter: state.requestCounter + 1
-            }))
-        }
-
         fetchTableData();
 
     }, [])
 
-    const setData = async () => {
-        const data = await getData();
+    const setData = async (update = false) => {
+        const data = await getData(update);
 
-        setState(state => ({...state, ...data}));
+        setState(state => ({...state, ...data, requestCounter: state.requestCounter + 1}));
     };
+
+    const onRandomDataClick = async () => {
+        await DataPageService.updateData();
+        fetchTableData(true);
+    }
 
     const deriveTableProps = id => ({
         columns: state[`${id.toLowerCase()}Columns`],
-        data: state[`${id.toLowerCase()}Data`]
+        data: state[`${id.toLowerCase()}Data`],
+        requestCounter: state.requestCounter
     })
+
+    const deriveGraphProps = () => state.actorsData.map((actor, index) => ({
+                ...state.valuesData[index],
+                ...actor,
+                requestCounter: state.requestCounter
+            }))
+
+
 
     const valuesTableProps = useMemo(() => deriveTableProps(TABLES_IDS.VALUES),
         [state.requestCounter]);
     const actorsTableProps = useMemo(() => deriveTableProps(TABLES_IDS.ACTORS),
         [state.requestCounter]);
+    const graphProps = useMemo(() => deriveGraphProps(),
+        [state.requestCounter]);
 
-    console.log(valuesTableProps);
-    console.log(actorsTableProps);
-
-    return <div>
-        <button onClick={setData}>Get Random Data</button>
+    return <div className="dataPageContainer">
+        <button onClick={onRandomDataClick}>Get Random Data</button>
         <div className="tablesContainer">
             <BaseTable
                 {...valuesTableProps}
@@ -81,6 +95,9 @@ export const DataPage = () => {
             <BaseTable
                 {...actorsTableProps}
             />
+        </div>
+        <div className="graphContainer">
+            <Graph actorsData={actorsTableProps.data} requestCounter={state.requestCounter} />
         </div>
     </div>;
 }

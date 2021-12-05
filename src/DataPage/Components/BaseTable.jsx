@@ -1,15 +1,51 @@
-import React, {useEffect, useState } from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import { useTable } from "react-table";
 
 import "./BaseTable.css";
 
-export const  BaseTable = ({ columns = [], data = []}) => {
-    // console.log(columns);
-    // console.log(data);
+export const BaseTable = ({ columns = [], data = [], requestCounter}) => {
     const [tableProps, setTableProps] = useState([]);
     const [tableBodyProps, setTableBodyProps] = useState([]);
     const [tableHeaderGroups, setTableHeaderGroups] = useState([]);
     const [tableRows, setTableRows] = useState([]);
+
+    const getPointCellFunction = () => ({ value }) => {
+        return <>
+            <div>
+                {`X: ${value[0]}, Y: ${value[1]}`}
+            </div>
+        </>
+    }
+
+    const viewTableProps = {
+        valueOne: {
+            Cell: getPointCellFunction()
+        },
+        valueTwo: {
+            Cell: getPointCellFunction()
+        }
+    }
+
+    const getCompleteTableProps = () => {
+        const appliedColumns = columns.map(column => {
+            if (viewTableProps[column.accessor]) {
+                return {
+                    ...column,
+                    ...viewTableProps[column.accessor]
+                }
+            }
+
+            return column;
+        })
+
+
+        return appliedColumns;
+    }
+
+    const completeColumns = useMemo(() => getCompleteTableProps(),
+        [requestCounter]);
+
+
 
     const {
         getTableProps,
@@ -18,7 +54,7 @@ export const  BaseTable = ({ columns = [], data = []}) => {
         rows,
         prepareRow
     } = useTable({
-        columns,
+        columns: completeColumns,
         data,
     })
 
@@ -38,8 +74,6 @@ export const  BaseTable = ({ columns = [], data = []}) => {
             {tableHeaderGroups.map(headerGroup => (
                 <tr {...headerGroup.getHeaderGroupProps()}>
                     {headerGroup.headers.map(column => {
-                        console.log(column);
-                        console.log(column.getHeaderProps());
                         return <th {...column.getHeaderProps()}>{column.render('Header')}</th>
                     })}
                 </tr>
