@@ -42,6 +42,10 @@ form {
     margin-bottom: 25px;
 }
 
+.zoomSubform {
+    margin-top: 35px;
+}
+
 .zoomButtonsContainer {
     display: flex;
     justify-content: space-between;
