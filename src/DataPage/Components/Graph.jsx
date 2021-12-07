@@ -39,6 +39,7 @@ export const Graph = ({ actorsData, requestCounter }) => {
         lineStrokeWidth: 1,
         areXTicksDisplayed: true,
         areYTicksDisplayed: true,
+        gridStrokeDasharray: "",
         xAxisColor: COLOR_OPTIONS[5],
         yAxisColor: COLOR_OPTIONS[5]
     }
@@ -211,6 +212,8 @@ export const Graph = ({ actorsData, requestCounter }) => {
                     COLOR_OPTIONS)}
                 {getInput("lineStrokeWidth", "number",
                     "Width of the Lines")}
+                {getInput("gridStrokeDasharray", "text",
+                    "Pattern of Grid Dashes")}
             </div>
             <div className="subform">
                 {getInput("width", "number", "Width")}
@@ -306,7 +309,9 @@ export const Graph = ({ actorsData, requestCounter }) => {
 
     const renderServiceElements = () => <>
         {getTitle()}
-        {state.isGridDisplayed && <CartesianGrid stroke="#ccc" />}
+        {state.isGridDisplayed &&
+            <CartesianGrid stroke="#ccc"
+            strokeDasharray={state.gridStrokeDasharray} />}
         {getAxis()}
         {state.isLegendDisplayed && <Legend className="legend" wrapperStyle={{
             bottom: 70
