@@ -1,3 +1,10 @@
+.innerGraphContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
 .chart {
     margin-bottom: 100px;
     margin-top: 100px;
@@ -11,6 +18,9 @@ form {
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
+
+    width: 1000px;
+    height: 250px;
 }
 
 .input, .select {
@@ -22,12 +32,12 @@ form {
     margin-bottom: 5px;
 }
 
-
-
-
-
 .subform {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+}
+
+.toDefaultSubform {
+    margin-bottom: 25px;
 }

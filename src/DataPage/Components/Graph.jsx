@@ -20,6 +20,7 @@ export const Graph = ({ actorsData, requestCounter }) => {
         height: CHART_HEIGHT,
         isGridDisplayed: true,
         isLegendDisplayed: true,
+        isTooltipDisplayed: true,
         marginTop: 35,
         marginRight: 20,
         marginBottom: 150,
@@ -68,9 +69,9 @@ export const Graph = ({ actorsData, requestCounter }) => {
     }
 
 
-    const getSelect = (id, labelText, values = [], value) => <div className="select">
+    const getSelect = (id, labelText, values = []) => <div className="select">
         <label htmlFor={id}>{`${labelText}: `}</label>
-        <select value={value} name={id} id={id}>
+        <select value={state[id]} name={id} id={id} onChange={event => onInputChange(event, id)}>
             {
                 values.map((value, index) =>
                     <option value={value} key={index}>{value}</option>)
@@ -82,15 +83,17 @@ export const Graph = ({ actorsData, requestCounter }) => {
     const onInputChange = (event, id) => {
         let value = event.target.value;
 
-        console.log(value);
         if (typeof state[id] === "number") {
             value = parseInt(value);
         }
 
-        console.log(typeof state[id]);
         if (typeof state[id] === "boolean") {
-            console.log(state[id]);
-            value = !!value;
+            setState(state => ({
+                ...state,
+                [id]: !state[id]
+            }));
+
+            return;
         }
 
         setState({
@@ -99,45 +102,60 @@ export const Graph = ({ actorsData, requestCounter }) => {
         })
     }
 
-
-    const getInput = (id, type, labelText, value) => <div className="input">
+    const getInput = (id, type, labelText) => <div className="input">
         <label htmlFor={id}>{`${labelText}: `}</label>
         <input type={type} id={id} name={id}
-               minLength="4" maxLength="8" size="10"
-               value={value} checked={type==="checkbox" && !!value}
+               value={state[id]} checked={!!(type==="checkbox" && !!state[id])}
                onChange={event => onInputChange(event, id)}
         />
         </div>
 
+    const onDefaultClick = () => {
+        setState(() => ({
+            ...initialState
+        }))
+    }
 
     const renderForm = () => {
-        return <form onSubmit={onSubmit}>
+        return (
+        <>
+            <div className="toDefaultSubform">
+                <button onClick={onDefaultClick}>To Default</button>
+            </div>
+            <form onSubmit={onSubmit}>
             <div className="subform">
-                {getInput("title", "text", "Title", state.title)}
-                {getInput("xAxisLabel", "text", "X-axis Title", state.xAxisLabel)}
-                {getInput("yAxisLabel", "text", "Y-axis Title", state.yAxisLabel)}
+                {getInput("title", "text", "Title")}
+                {getInput("xAxisLabel", "text", "X-axis Title")}
+                {getInput("yAxisLabel", "text", "Y-axis Title")}
             </div>
             <div className="subform">
-                {getInput("width", "number", "Width", state.width)}
-                {getInput("height", "number", "Height", state.height)}
+                {getInput("width", "number", "Width")}
+                {getInput("height", "number", "Height")}
                 {getInput("marginRight", "number",
-                    "Chart right margin", state.marginRight)}
+                    "Chart right margin")}
                 {getInput("marginLeft", "number",
-                    "Chart left margin", state.marginLeft)}
+                    "Chart left margin")}
                 {getInput("marginTop", "number",
-                    "Chart top margin", state.marginTop)}
+                    "Chart top margin")}
                 {getInput("marginBottom", "number",
-                    "Chart bottom margin", state.marginBottom)}
+                    "Chart bottom margin")}
             </div>
             <div className="subform">
                 {getSelect("interpolationType", "Interpolation type",
-                    INTERPOLATION_TYPES, state.interpolationType)}
+                    INTERPOLATION_TYPES)}
                 {getInput("isGridDisplayed", "checkbox",
-                    "Display Grid", state.isGridDisplayed)}
+                    "Display Grid")}
                 {getInput("isLegendDisplayed", "checkbox",
-                    "Display Legend", state.isLegendDisplayed)}
+                    "Display Legend")}
+                {getInput("isTooltipDisplayed", "checkbox",
+                    "Display Tooltip")}
             </div>
         </form>
+            </>)
+    }
+
+    const renderZoomForm = () => {
+
     }
 
     if (!actorsData || !actorsData.length) {
@@ -147,9 +165,8 @@ export const Graph = ({ actorsData, requestCounter }) => {
     const getLine = (dataKey, color, key) =>
         <Line key={key}
               dataKey={dataKey}
-              type="monotone"
+              type={state.interpolationType}
               stroke={color}
-              dot={{ stroke: 'black', strokeWidth: 2 }}
         />
 
 
@@ -164,7 +181,7 @@ export const Graph = ({ actorsData, requestCounter }) => {
         <Label value={state.yAxisLabel} offset={35} position="left" />
 
     const getTitle = () =>
-        <XAxis xAxisId={1} orientation="top" tick={false}>
+        <XAxis dataKey="name" xAxisId={1} orientation="top" tick={false}>
             <Label value={state.title} offset={5} position="top" />
         </XAxis>
 
@@ -172,14 +189,14 @@ export const Graph = ({ actorsData, requestCounter }) => {
         <XAxis xAxisId={0} dataKey="name" orientation="bottom">
             {getXLabel()}
         </XAxis>
-        <YAxis>
+        <YAxis type="number" domain={[0, 11]} scale="auto" allowDataOverflow>
             {getYLabel()}
         </YAxis>
     </>
 
 
 
-   return (<>
+   return (<div className="innerGraphContainer">
        {renderForm()}
         <LineChart
             className="chart"
@@ -197,12 +214,12 @@ export const Graph = ({ actorsData, requestCounter }) => {
         >
             {getTitle()}
             {renderLines()}
-            <CartesianGrid stroke="#ccc" />
+            {state.isGridDisplayed && <CartesianGrid stroke="#ccc" />}
             {getAxis()}
-            <Legend className="legend" wrapperStyle={{
+            {state.isLegendDisplayed && <Legend className="legend" wrapperStyle={{
                 bottom: 70
-            }}/>
-            <Tooltip />
+            }}/>}
+            {state.isTooltipDisplayed && <Tooltip />}
         </LineChart>
        {/*<AreaChart className="chart"*/}
        {/*    width={CHART_WIDTH} height={CHART_HEIGHT} data={data}*/}
@@ -232,6 +249,6 @@ export const Graph = ({ actorsData, requestCounter }) => {
        {/*    {renderBars()}*/}
        {/*    {renderAreas()}*/}
        {/*</ComposedChart>*/}
-   </>)
+   </div>)
 
 }
