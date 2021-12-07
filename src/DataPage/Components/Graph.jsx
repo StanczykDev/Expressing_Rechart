@@ -189,7 +189,7 @@ export const Graph = ({ actorsData, requestCounter }) => {
         <XAxis xAxisId={0} dataKey="name" orientation="bottom">
             {getXLabel()}
         </XAxis>
-        <YAxis type="number" domain={[0, 11]} scale="auto" allowDataOverflow>
+        <YAxis type="number" domain={[0, 10]} scale="auto" allowDataOverflow>
             {getYLabel()}
         </YAxis>
     </>
