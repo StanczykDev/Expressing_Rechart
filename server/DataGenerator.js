@@ -3,7 +3,7 @@ const { TABLES_IDS } = require('./consts/TablesIdentificators');
 
 const ITEMS_QUANTITY_RANGE = [3, 5, 10];
 const COLORS_RANGE = ["#DB2B39", "#29335C", "#F3A712", "#F0CEA0", "#534D41"];
-const VALUE_1_MAX = 10;
+const VALUE_1_MAX = 100;
 const VALUE_1_MIN = 0;
 const VALUE_2_MAX = 120;
 const VALUE_2_MIN = 0;
@@ -80,7 +80,7 @@ const getValuesData = (quantity, actors, pointsQuantity) => {
 
 const getData = pointsQuantity => {
     const itemsQuantity = ITEMS_QUANTITY_RANGE[getRandomNumber(ITEMS_QUANTITY_RANGE.length)];
-
+    // const itemsQuantity = 2;
     const actorsData = getActorsData(itemsQuantity);
     const valuesData = getValuesData(itemsQuantity, actorsData, pointsQuantity);
 

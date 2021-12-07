@@ -41,3 +41,12 @@ form {
 .toDefaultSubform {
     margin-bottom: 25px;
 }
+
+.zoomButtonsContainer {
+    display: flex;
+    justify-content: space-between;
+
+    width: 350px;
+
+    margin-top: 15px;
+}
