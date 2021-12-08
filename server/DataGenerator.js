@@ -11,6 +11,8 @@ const VALUE_3_MAX = 90;
 const NAME_PREFIX = ["Lawful", "Neutral", "Chaotic"];
 const NAME_POSTFIX = ["Good", "Neutral", "Evil"];
 
+let currentMaxValue;
+
 
 
 const getRandomColor = () => {
@@ -58,7 +60,7 @@ const getValue = (actorId, pointsQuantity) => {
     const points = [];
 
     for (let i = 0; i < pointsQuantity; i++) {
-        points.push(getRandomNumber(VALUE_1_MAX));
+        points.push(getRandomNumber(currentMaxValue));
     }
 
     return {
@@ -78,9 +80,10 @@ const getValuesData = (quantity, actors, pointsQuantity) => {
     return valuesData;
 }
 
-const getData = pointsQuantity => {
-    const itemsQuantity = ITEMS_QUANTITY_RANGE[getRandomNumber(ITEMS_QUANTITY_RANGE.length)];
-    // const itemsQuantity = 2;
+const getData = (pointsQuantity,
+                 itemsQuantity = ITEMS_QUANTITY_RANGE[getRandomNumber(ITEMS_QUANTITY_RANGE.length)],
+                 maxValue = VALUE_1_MAX) => {
+    currentMaxValue = maxValue;
     const actorsData = getActorsData(itemsQuantity);
     const valuesData = getValuesData(itemsQuantity, actorsData, pointsQuantity);
 

@@ -1,14 +1,12 @@
 export class DataPageService {
-    static fetchData = (update = false) =>
+    static fetchData = () =>
         fetch("api/tablesData", {
             method: "PUT",
             headers: {
                 'Accept': 'application/json, text/plain, */*',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                update
-            })
+            body: JSON.stringify({})
         });
 
     static fetchColumns = id => fetch(`api/${id}/columns`, {
@@ -19,5 +17,18 @@ export class DataPageService {
         method: "GET"
     });
 
-    static updateData = () => fetch(`api/update`);
+    static updateData = (pointsQuantity, actorsQuantity, maxValue) =>
+        fetch(`api/update`,
+            {
+                method: "PUT",
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    pointsQuantity,
+                    actorsQuantity,
+                    maxValue
+                })
+            })
 }

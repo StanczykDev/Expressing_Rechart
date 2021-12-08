@@ -25,6 +25,7 @@ export const DataPage = () => {
     }
 
     const [state, setState] = useState(initialState);
+    const [dataForm, setDataForm] = useState({})
 
     const getColumns = async id => {
         const response = await DataPageService.fetchColumns(id);
@@ -32,16 +33,16 @@ export const DataPage = () => {
         return (await response.json()).columns;
     };
 
-    const getData = async (update = false) => {
-        const response = await DataPageService.fetchData(update);
+    const getData = async (pointsQuantity, actorsQuantity, maxValue) => {
+        const response = await DataPageService.fetchData(pointsQuantity, actorsQuantity, maxValue);
 
         return await response.json();
     };
 
-    const fetchTableData = async (update = false) => {
+    const fetchTableData = async () => {
         const valuesColumns = await getColumns(TABLES_IDS.VALUES);
         const actorsColumns = await getColumns(TABLES_IDS.ACTORS);
-        const { valuesData, actorsData } = await getData(update);
+        const { valuesData, actorsData } = await getData();
 
         setState(state => ({
             ...state, valuesColumns, actorsColumns, valuesData, actorsData,
@@ -61,8 +62,10 @@ export const DataPage = () => {
     };
 
     const onRandomDataClick = async () => {
-        await DataPageService.updateData();
-        fetchTableData(true);
+        await DataPageService.updateData(dataForm.pointsQuantity,
+                                        dataForm.actorsQuantity,
+                                        dataForm.maxValue);
+        fetchTableData();
     }
 
     const deriveTableProps = id => ({
@@ -86,8 +89,32 @@ export const DataPage = () => {
     const graphProps = useMemo(() => deriveGraphProps(),
         [state.requestCounter]);
 
+    const onInputChange = (event, id) => {
+        let value = event.target.value;
+
+        setDataForm(dataForm => ({
+            ...dataForm,
+            [id]: value
+        }));
+    }
+
+    const getInput = (id, type, labelText) => <div className="dataInput">
+        <label htmlFor={id}>{`${labelText}: `}</label>
+        <input type={type} id={id} name={id}
+               value={dataForm[id]}
+               onChange={event => onInputChange(event, id)}
+        />
+    </div>
+
+    const renderDataForm = () => <div className="dataForm">
+        <button onClick={onRandomDataClick} className="dataButton">Get Random Data</button>
+        {getInput("pointsQuantity", "number", "Points Quantity")}
+        {getInput("actorsQuantity", "number", "Actors Quantity")}
+        {getInput("maxValue", "number", "Maximum Value")}
+    </div>
+
     return <div className="dataPageContainer">
-        <button onClick={onRandomDataClick}>Get Random Data</button>
+        {renderDataForm()}
         <div className="tablesContainer">
             <BaseTable
                 {...valuesTableProps}
@@ -97,7 +124,8 @@ export const DataPage = () => {
             />
         </div>
         <div className="graphContainer">
-            <Graph actorsData={actorsTableProps.data} requestCounter={state.requestCounter} />
+            <Graph actorsData={actorsTableProps.data} requestCounter={state.requestCounter}
+                    maxValue={dataForm.maxValue}/>
         </div>
     </div>;
 }

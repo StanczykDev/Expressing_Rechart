@@ -15,3 +15,23 @@
 .graphContainer {
     margin-top: 50px;
 }
+
+.dataForm {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    width: 300px;
+    height: 125px;
+
+    margin-bottom: 15px;
+}
+
+.dataButton {
+    margin-bottom: 15px;
+}
+
+.dataInput {
+    display: flex;
+    justify-content: space-between;
+}
+

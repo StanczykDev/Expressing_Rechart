@@ -51,10 +51,11 @@ const getPreformedDataForTables = () => ({
     [TABLES_IDS.VALUES]: deriveValuesDataForTables()
 })
 
-const generateData = () => {
-    pointsQuantity = getRandomNumber(8) + 2;
+const generateData = (receivedPointsQuantity = getRandomNumber(8) + 2,
+                      actorsQuantity, maxValue) => {
+    pointsQuantity = receivedPointsQuantity;
     cachedColumns = generateColumns(pointsQuantity);
-    cachedData = getRandomData(pointsQuantity);
+    cachedData = getRandomData(pointsQuantity, actorsQuantity, maxValue);
 }
 
 generateData();
@@ -121,8 +122,10 @@ const getPreformedDataForGraph = () => {
     return graphData;
 }
 
-app.get('/api/update', (req, res) => {
-    generateData();
+app.put('/api/update', (req, res) => {
+    const { body = {} } = req;
+
+    generateData(body.pointsQuantity, body.actorsQuantity, body.maxValue);
     res.sendStatus(200);
 })
 

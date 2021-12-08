@@ -23,6 +23,15 @@ export const BaseTable = ({ columns = [], data = [], requestCounter}) => {
         },
         valueTwo: {
             Cell: getPointCellFunction()
+        },
+        actorColor: {
+            Cell: ({ value }) => (
+                <div style={{
+                    "background-color": value,
+                    width: "150px",
+                    height: "35px",
+                }}/>
+            )
         }
     }
 
