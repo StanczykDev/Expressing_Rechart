@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from "react";
-import {LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip,
-    Area, AreaChart, BarChart, Bar, Legend, Label } from 'recharts';
+import {
+    LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip,
+    Area, AreaChart, BarChart, Bar, Legend, Label, PieChart, Pie, Cell
+} from 'recharts';
 import { DataPageService } from "../DataPageService";
 
 import "./Graph.css";
@@ -12,10 +14,10 @@ const INTERPOLATION_TYPES = ['monotone', 'basis', 'basisClosed', 'basisOpen', 'l
     'natural', 'monotoneX', 'monotoneY', 'step', 'stepBefore', 'stepAfter' ];
 const SCALE_TYPES = ['auto', 'linear', 'pow', 'sqrt','log', 'identity', 'time',
     'band', 'point', 'ordinal', 'quantile', 'quantize', 'utc', 'sequential', 'threshold']
-const GRAPH_TYPES = ['line', 'area', 'bar'];
+const GRAPH_TYPES = ['line', 'area', 'bar', 'pie'];
 const COLOR_OPTIONS = ["#ff0000", "#00ff00", "#0000ff", "#000000", "#ffffff", "default"]
 
-export const Graph = ({ actorsData, requestCounter }) => {
+export const Graph = ({ actorsData, requestCounter, graphType, onGraphTypeChange }) => {
     const initialState = {
         title: "Graph Title",
         xAxisLabel: "Actors",
@@ -34,7 +36,6 @@ export const Graph = ({ actorsData, requestCounter }) => {
         marginLeft: 100,
         interpolationType: "monotone",
         scaleType: 'auto',
-        graphType: 'line',
         zoomStep: 1,
         lineStrokeWidth: 1,
         areXTicksDisplayed: true,
@@ -48,7 +49,7 @@ export const Graph = ({ actorsData, requestCounter }) => {
 
     useEffect(() => {
         const getGraphData = async () => {
-            const graphData = await (await DataPageService.fetchGraphData()).json();
+            const graphData = await (await DataPageService.fetchGraphData(graphType)).json();
 
             setData(graphData);
         }
@@ -76,6 +77,10 @@ export const Graph = ({ actorsData, requestCounter }) => {
 
     const onInputChange = (event, id) => {
         let value = event.target.value;
+
+        if (id === "graphType") {
+            onGraphTypeChange(value);
+        }
 
         if (id === "isDataOverflowAllowed") {
             toDefaultZoom();
@@ -308,11 +313,11 @@ export const Graph = ({ actorsData, requestCounter }) => {
     </>
 
     const renderServiceElements = () => <>
-        {getTitle()}
-        {state.isGridDisplayed &&
+        {graphType !== "pie" && getTitle()}
+        {state.isGridDisplayed && graphType !== "pie" &&
             <CartesianGrid stroke="#ccc"
             strokeDasharray={state.gridStrokeDasharray} />}
-        {getAxis()}
+        {graphType !== "pie" && getAxis()}
         {state.isLegendDisplayed && <Legend className="legend" wrapperStyle={{
             bottom: 70
         }}/>}
@@ -344,7 +349,7 @@ export const Graph = ({ actorsData, requestCounter }) => {
 
    return (<div className="innerGraphContainer">
        {renderForm()}
-       {state.graphType === GRAPH_TYPES[0] &&
+       {graphType === GRAPH_TYPES[0] &&
            <LineChart
                className="chart"
                width={state.width}
@@ -363,7 +368,7 @@ export const Graph = ({ actorsData, requestCounter }) => {
                {renderLines()}
            </LineChart>
        }
-       {state.graphType === GRAPH_TYPES[1] &&
+       {graphType === GRAPH_TYPES[1] &&
             <AreaChart
                 className="chart"
                 width={state.width}
@@ -382,7 +387,7 @@ export const Graph = ({ actorsData, requestCounter }) => {
                 {renderAreas()}
             </AreaChart>
        }
-       {state.graphType === GRAPH_TYPES[2] &&
+       {graphType === GRAPH_TYPES[2] &&
             <BarChart
                 className="chart"
                 width={state.width}
@@ -400,6 +405,37 @@ export const Graph = ({ actorsData, requestCounter }) => {
                 {renderServiceElements()}
                 {renderBars()}
             </BarChart>
+       }
+       {graphType === GRAPH_TYPES[3] && data[0].color &&
+           <PieChart
+               className="chart"
+               width={state.width}
+               height={state.height}>
+               <Pie data={data[0].data}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    label
+                    outerRadius={70}
+                    fill={data[0].color}
+               >
+                   {data[0].data.map((dataItem, index) => (
+                       <Cell key={`cell-${index}`} fill={dataItem.color} />
+                   ))}
+               </Pie>
+               <Pie data={data[1].data}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    label
+                    innerRadius={80}
+                    outerRadius={100}
+                    fill={data[1].color}
+               />
+               {renderServiceElements()}
+           </PieChart>
        }
    </div>)
 

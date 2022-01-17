@@ -27,6 +27,17 @@ const getRandomColor = () => {
 
 const getRandomNumber = max => Math.floor(Math.random() * max);
 
+const getActorName = index => {
+    const actorNamePrefix = NAME_PREFIX[getRandomNumber(NAME_PREFIX.length)];
+    const actorNamePostfix = NAME_POSTFIX[getRandomNumber(NAME_POSTFIX.length)];
+
+    if (actorNamePrefix === actorNamePostfix) {
+        return `True ${actorNamePostfix} ${index + 1}`;
+    }
+
+    return `${actorNamePrefix} ${actorNamePostfix} ${index + 1}`;
+}
+
 const getActor = index => {
     const actor = {
         actorName: "",
@@ -34,14 +45,7 @@ const getActor = index => {
         actorId: uuid4()
     };
 
-    const actorNamePrefix = NAME_PREFIX[getRandomNumber(NAME_PREFIX.length)];
-    const actorNamePostfix = NAME_POSTFIX[getRandomNumber(NAME_POSTFIX.length)];
-
-    if (actorNamePrefix === actorNamePostfix) {
-        actor.actorName = `True ${actorNamePostfix} ${index + 1}`;
-    } else {
-        actor.actorName = `${actorNamePrefix} ${actorNamePostfix} ${index + 1}`;
-    }
+    actor.actorName = getActorName(index);
 
     return actor
 }
@@ -69,6 +73,20 @@ const getValue = (actorId, pointsQuantity) => {
     };
 }
 
+const getPieValues = actors => {
+    const values = [];
+
+    for (let actor of actors) {
+        console.log(actor);
+        values.push({
+            name: actor.actorName,
+            value: getRandomNumber(currentMaxValue),
+            color: getRandomColor()
+        })
+    }
+
+    return values;
+}
 
 const getValuesData = (quantity, actors, pointsQuantity) => {
     const valuesData = [];
@@ -78,6 +96,19 @@ const getValuesData = (quantity, actors, pointsQuantity) => {
     }
 
     return valuesData;
+}
+
+const getPieValuesData = (actors, pointsQuantity) => {
+    const pieValuesData = [];
+
+    for (let index = 0; index < pointsQuantity; index += 1) {
+        pieValuesData.push({
+            data: getPieValues(actors),
+            color: getRandomColor()
+        });
+    }
+
+    return pieValuesData;
 }
 
 const getData = (pointsQuantity,
@@ -93,7 +124,17 @@ const getData = (pointsQuantity,
     }
 }
 
+const getPieData = ( pointsQuantity,
+                 itemsQuantity = ITEMS_QUANTITY_RANGE[getRandomNumber(ITEMS_QUANTITY_RANGE.length)],
+                 maxValue = VALUE_1_MAX) => {
+    currentMaxValue = maxValue;
+    const actorsData = getActorsData(itemsQuantity);
+    return getPieValuesData(actorsData, pointsQuantity);
+}
+
 module.exports = {
     getRandomData: getData,
-    getRandomNumber
+    getRandomPieData: getPieData,
+    getRandomNumber,
+    getRandomColor
 }

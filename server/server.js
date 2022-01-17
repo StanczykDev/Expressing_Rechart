@@ -5,10 +5,11 @@ const TablesEndpoints = require("./TablesEndpoints");
 const DataGenerator = require("./DataGenerator")
 const TablesIdentificators = require("./consts/TablesIdentificators");
 const TablesColumns = require("./TablesColumns");
+const {getRandomColor} = require("./DataGenerator");
 
 const { ENDPOINTS } = TablesEndpoints;
-const { getRandomData, getRandomNumber } = DataGenerator;
-const { generateColumns } = TablesColumns;
+const { getRandomData, getRandomNumber, getRandomPieData } = DataGenerator;
+const { generateColumns, generatePieColumns } = TablesColumns;
 const { TABLES_IDS } = TablesIdentificators;
 
 app.use(express.json());
@@ -32,8 +33,10 @@ app.get('/api/anotherMessage', (req, res) => {
 })
 
 let cachedData = null;
+let cachedPieData = null;
 let cachedColumns = null;
 let pointsQuantity;
+let currentGraphType = null;
 
 const deriveValuesDataForTables = () =>
     cachedData[TABLES_IDS.VALUES].map((valuesSet => ({
@@ -52,8 +55,14 @@ const getPreformedDataForTables = () => ({
 })
 
 const generateData = (receivedPointsQuantity = getRandomNumber(8) + 2,
-                      actorsQuantity, maxValue) => {
+                      actorsQuantity, maxValue, graphType) => {
     pointsQuantity = receivedPointsQuantity;
+    currentGraphType = graphType;
+
+    if (graphType === "pie") {
+        pointsQuantity = 2;
+    }
+
     cachedColumns = generateColumns(pointsQuantity);
     cachedData = getRandomData(pointsQuantity, actorsQuantity, maxValue);
 }
@@ -103,6 +112,33 @@ const deriveGraphDataFromValueObject = index => {
     return graphData;
 }
 
+const getPreformedPieData = () => {
+    const pieData = [
+        {
+            color: getRandomColor(),
+            data: []
+        },
+        {
+            color: getRandomColor(),
+            data: []
+        }];
+
+    for (let i = 0; i < cachedData[TABLES_IDS.ACTORS].length; i++) {
+        pieData[0].data.push({
+            value: cachedData[TABLES_IDS.VALUES][i].points[0],
+            name: cachedData[TABLES_IDS.ACTORS][i].actorName,
+            color: cachedData[TABLES_IDS.ACTORS][i].actorColor
+        });
+
+        pieData[1].data.push({
+            value: cachedData[TABLES_IDS.VALUES][i].points[1],
+            name: cachedData[TABLES_IDS.ACTORS][i].actorName
+        });
+    }
+
+    return pieData;
+}
+
 const getPreformedDataForGraph = () => {
     if (!cachedData) {
         return [];
@@ -125,11 +161,16 @@ const getPreformedDataForGraph = () => {
 app.put('/api/update', (req, res) => {
     const { body = {} } = req;
 
-    generateData(body.pointsQuantity, body.actorsQuantity, body.maxValue);
+    generateData(body.pointsQuantity, body.actorsQuantity, body.maxValue, body.graphType);
     res.sendStatus(200);
 })
 
-app.get('/api/graphData', (req, res) => {
+app.put('/api/graphData', (req, res) => {
+    console.log(req.body);
+    if (req.body.type === "pie") {
+        res.json(getPreformedPieData())
+    }
+
     res.json(getPreformedDataForGraph())
 })
 

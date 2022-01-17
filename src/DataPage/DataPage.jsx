@@ -15,17 +15,27 @@ import "./DataPage.css";
 const VALUES_BUTTON_TEXT = "Get random values";
 const ACTORS_BUTTON_TEXT = "Get random actors";
 
+const GRAPH_TYPES = ['line', 'area', 'bar', 'pie'];
+
 export const DataPage = () => {
     const initialState = {
         valuesColumns: [],
         actorsColumns: [],
         valuesData: [],
         actorsData: [],
-        requestCounter: 0
+        requestCounter: 0,
+        graphType: GRAPH_TYPES[0]
     }
 
     const [state, setState] = useState(initialState);
     const [dataForm, setDataForm] = useState({})
+
+    const setGraphType = graphType => {
+        setState(state => ({
+            ...state,
+            graphType
+        }))
+    }
 
     const getColumns = async id => {
         const response = await DataPageService.fetchColumns(id);
@@ -51,8 +61,7 @@ export const DataPage = () => {
     }
 
     useEffect(() => {
-        fetchTableData();
-
+        onRandomDataClick()
     }, [])
 
     const setData = async (update = false) => {
@@ -64,7 +73,8 @@ export const DataPage = () => {
     const onRandomDataClick = async () => {
         await DataPageService.updateData(dataForm.pointsQuantity,
                                         dataForm.actorsQuantity,
-                                        dataForm.maxValue);
+                                        dataForm.maxValue,
+                                        state.graphType);
         fetchTableData();
     }
 
@@ -125,7 +135,9 @@ export const DataPage = () => {
         </div>
         <div className="graphContainer">
             <Graph actorsData={actorsTableProps.data} requestCounter={state.requestCounter}
-                    maxValue={dataForm.maxValue}/>
+                    maxValue={dataForm.maxValue}
+                    graphType={state.graphType}
+                    onGraphTypeChange={setGraphType}/>
         </div>
     </div>;
 }

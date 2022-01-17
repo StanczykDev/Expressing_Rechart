@@ -41,6 +41,17 @@ const generateColumns = pointsQuantity => {
     return columns;
 }
 
+// const generatePieColumns = pieData => {
+//     const columns = {
+//         VALUES: [...COLUMNS.VALUES],
+//         ACTORS: [...COLUMNS.ACTORS]
+//     };
+//
+//     for (let i = 0; i < pieData.length; i++) {
+//         columns.VALUES.
+//     }
+// }
+
 module.exports = {
     COLUMNS,
     generateColumns
