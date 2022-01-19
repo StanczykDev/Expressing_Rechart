@@ -5,10 +5,10 @@ const TablesEndpoints = require("./TablesEndpoints");
 const DataGenerator = require("./DataGenerator")
 const TablesIdentificators = require("./consts/TablesIdentificators");
 const TablesColumns = require("./TablesColumns");
-const {getScatterData} = require("./DataGenerator");
 
 const { ENDPOINTS } = TablesEndpoints;
-const { getRandomData, getRandomNumber, getRandomColor, VALUE_1_MAX } = DataGenerator;
+const { getRandomData, getRandomNumber, getRandomColor, VALUE_1_MAX,
+        getScatterData, treeData, sankeyData} = DataGenerator;
 const { generateColumns, generatePieColumns } = TablesColumns;
 const { TABLES_IDS } = TablesIdentificators;
 
@@ -214,6 +214,20 @@ app.put('/api/graphData', (req, res) => {
         }
 
         res.json(preformedData);
+    }
+
+    if (req.body.type === "treeMap") {
+        res.json({
+            color: getRandomColor(),
+            data: treeData
+        })
+    }
+
+    if (req.body.type === "sankey") {
+        res.json({
+            color: getRandomColor(),
+            data: sankeyData
+        })
     }
 
     res.json(getPreformedDataForGraph())

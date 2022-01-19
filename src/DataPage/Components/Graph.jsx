@@ -5,7 +5,8 @@ import {
     RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar,
     RadialBarChart, RadialBar,
     FunnelChart, Funnel, LabelList,
-    ScatterChart, Scatter
+    ScatterChart, Scatter,
+    Treemap, Sankey
 } from 'recharts';
 import { DataPageService } from "../DataPageService";
 import { GRAPH_TYPES } from "../DataPage";
@@ -63,7 +64,9 @@ export const Graph = ({ actorsData, requestCounter, graphType, onGraphTypeChange
         innerRadiusRadar: 0,
         outerRadiusRadar: 80,
         startAngleRadar: 90,
-        endAngleRadar: -270
+        endAngleRadar: -270,
+        treeMapRatioNumerator: 4,
+        treeMapRatioDenominator: 3
     }
     const [data, setData] = useState([]);
     const [localActorsData, setActorsData] = useState([]);
@@ -338,6 +341,10 @@ export const Graph = ({ actorsData, requestCounter, graphType, onGraphTypeChange
                     "Width of the Lines")}
                 {getInput("gridStrokeDasharray", "text",
                     "Pattern of Grid Dashes")}
+                {getInput("treeMapRatioNumerator", "number",
+                    "Tree Map Ratio Numerator")}
+                {getInput("treeMapRatioDenominator", "number",
+                    "Tree Map Ratio Denominator")}
             </div>
             <div className="subform">
                 {getInput("width", "number", "Width")}
@@ -751,6 +758,39 @@ export const Graph = ({ actorsData, requestCounter, graphType, onGraphTypeChange
                {renderServiceElements()}
            </ScatterChart>
          )
+       }
+       {graphType === GRAPH_TYPES[8] &&
+        (
+            <Treemap
+                width={state.width}
+                height={state.height}
+                data={data.data}
+                dataKey="size"
+                ratio={state.treeMapRatioNumerator / state.treeMapRatioDenominator}
+                stroke="#fff"
+                fill={data.color}
+            />
+        )
+       }
+       {graphType === GRAPH_TYPES[9] && data.data &&
+       (
+           <Sankey
+               width={state.width}
+               height={state.height}
+               data={data.data}
+               node={{stroke: data.color, strokeWidth: state.lineStrokeWidth}}
+               nodePading={50}
+               margin={{
+                   top: state.marginTop,
+                   right: state.marginRight,
+                   bottom: state.marginBottom,
+                   left: state.marginLeft
+               }}
+               link={{ stroke: data.color }}
+           >
+               {state.isTooltipDisplayed && <Tooltip />}
+           </Sankey>
+       )
 
        }
    </div>)

@@ -15,7 +15,8 @@ import "./DataPage.css";
 const VALUES_BUTTON_TEXT = "Get random values";
 const ACTORS_BUTTON_TEXT = "Get random actors";
 
-export const GRAPH_TYPES = ['line', 'area', 'bar', 'pie', 'radar', 'radialBar', 'funnel', 'scatter'];
+export const GRAPH_TYPES = ['line', 'area', 'bar', 'pie', 'radar', 'radialBar',
+    'funnel', 'scatter', 'treeMap', 'sankey'];
 
 export const DataPage = () => {
     const initialState = {
@@ -135,7 +136,8 @@ export const DataPage = () => {
 
     return <div className="dataPageContainer">
         {renderDataForm()}
-        {state.graphType !== "scatter" &&
+        {state.graphType !== "scatter" && state.graphType !== "treeMap" &&
+            state.graphType !== "sankey" &&
             (<div className="tablesContainer">
                     <BaseTable
                         {...valuesTableProps}
