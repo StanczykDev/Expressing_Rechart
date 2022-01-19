@@ -5,10 +5,10 @@ const TablesEndpoints = require("./TablesEndpoints");
 const DataGenerator = require("./DataGenerator")
 const TablesIdentificators = require("./consts/TablesIdentificators");
 const TablesColumns = require("./TablesColumns");
-const {getRandomColor} = require("./DataGenerator");
+const {getScatterData} = require("./DataGenerator");
 
 const { ENDPOINTS } = TablesEndpoints;
-const { getRandomData, getRandomNumber, getRandomPieData } = DataGenerator;
+const { getRandomData, getRandomNumber, getRandomColor, VALUE_1_MAX } = DataGenerator;
 const { generateColumns, generatePieColumns } = TablesColumns;
 const { TABLES_IDS } = TablesIdentificators;
 
@@ -34,8 +34,11 @@ app.get('/api/anotherMessage', (req, res) => {
 
 let cachedData = null;
 let cachedPieData = null;
+let cachedScatterData = null;
 let cachedColumns = null;
+let currentMaxValue = VALUE_1_MAX;
 let pointsQuantity;
+let currentActorsQuantity;
 let currentGraphType = null;
 
 const deriveValuesDataForTables = () =>
@@ -55,16 +58,37 @@ const getPreformedDataForTables = () => ({
 })
 
 const generateData = (receivedPointsQuantity = getRandomNumber(8) + 2,
-                      actorsQuantity, maxValue, graphType) => {
-    pointsQuantity = receivedPointsQuantity;
+                      actorsQuantity = getRandomNumber(8) + 2,
+                      maxValue = currentMaxValue,
+                      graphType) => {
+    pointsQuantity = receivedPointsQuantity || getRandomNumber(8) + 2;
+    currentActorsQuantity = actorsQuantity || getRandomNumber(8) + 2;
     currentGraphType = graphType;
+    currentMaxValue = maxValue;
 
-    if (graphType === "pie") {
+    if (currentGraphType === "pie") {
         pointsQuantity = 2;
     }
 
+    if (currentGraphType === "funnel") {
+        pointsQuantity = 1;
+    }
+
+    if (currentGraphType === "scatter") {
+        currentActorsQuantity = 3;
+    }
+
+    if (currentGraphType === "radar" && pointsQuantity < 3) {
+        pointsQuantity = 3;
+    }
+
+    if (currentGraphType === "scatter") {
+        cachedScatterData = getScatterData(pointsQuantity, currentActorsQuantity, currentMaxValue);
+        return;
+    }
+
     cachedColumns = generateColumns(pointsQuantity);
-    cachedData = getRandomData(pointsQuantity, actorsQuantity, maxValue);
+    cachedData = getRandomData(pointsQuantity, currentActorsQuantity, maxValue);
 }
 
 generateData();
@@ -127,7 +151,8 @@ const getPreformedPieData = () => {
         pieData[0].data.push({
             value: cachedData[TABLES_IDS.VALUES][i].points[0],
             name: cachedData[TABLES_IDS.ACTORS][i].actorName,
-            color: cachedData[TABLES_IDS.ACTORS][i].actorColor
+            color: cachedData[TABLES_IDS.ACTORS][i].actorColor,
+            fill: cachedData[TABLES_IDS.ACTORS][i].actorColor
         });
 
         pieData[1].data.push({
@@ -150,10 +175,15 @@ const getPreformedDataForGraph = () => {
         graphData[i] = {};
         graphData[i].name = `POINT ${i + 1}`;
 
+        graphData[i].fullMark = parseInt(currentMaxValue);
+        graphData[i].fill = getRandomColor();
+
         cachedData[TABLES_IDS.ACTORS].forEach((actor, index) => {
             graphData[i][actor.actorName] = cachedData[TABLES_IDS.VALUES][index].points[i];
         })
     }
+
+    console.log(graphData);
 
     return graphData;
 }
@@ -167,8 +197,23 @@ app.put('/api/update', (req, res) => {
 
 app.put('/api/graphData', (req, res) => {
     console.log(req.body);
-    if (req.body.type === "pie") {
+    if (req.body.type === "pie" || req.body.type === "funnel") {
         res.json(getPreformedPieData())
+    }
+
+    if (req.body.type === "scatter") {
+        const colors = [];
+
+        for (let i = 0; i < cachedScatterData.length; i++) {
+            colors.push(getRandomColor());
+        }
+
+        const preformedData = {
+            data: cachedScatterData,
+            colors
+        }
+
+        res.json(preformedData);
     }
 
     res.json(getPreformedDataForGraph())

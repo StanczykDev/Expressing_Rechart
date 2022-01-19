@@ -19,7 +19,7 @@ form {
     flex-direction: row;
     justify-content: space-evenly;
 
-    width: 1000px;
+    width: 1900px;
     height: 250px;
 }
 
@@ -41,6 +41,7 @@ form {
 .toDefaultSubform {
     margin-bottom: 25px;
 }
+
 
 .zoomSubform {
     margin-top: 35px;

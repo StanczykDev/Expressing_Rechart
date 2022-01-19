@@ -15,7 +15,7 @@ import "./DataPage.css";
 const VALUES_BUTTON_TEXT = "Get random values";
 const ACTORS_BUTTON_TEXT = "Get random actors";
 
-const GRAPH_TYPES = ['line', 'area', 'bar', 'pie'];
+export const GRAPH_TYPES = ['line', 'area', 'bar', 'pie', 'radar', 'radialBar', 'funnel', 'scatter'];
 
 export const DataPage = () => {
     const initialState = {
@@ -28,13 +28,18 @@ export const DataPage = () => {
     }
 
     const [state, setState] = useState(initialState);
-    const [dataForm, setDataForm] = useState({})
+    const [dataForm, setDataForm] = useState({
+        maxValue: 150
+    })
 
-    const setGraphType = graphType => {
-        setState(state => ({
+    const setGraphType = async graphType => {
+        console.log(graphType);
+        console.log("1", state.graphType);
+        await setState(state => ({
             ...state,
             graphType
         }))
+        console.log("2", state.graphType)
     }
 
     const getColumns = async id => {
@@ -64,6 +69,10 @@ export const DataPage = () => {
         onRandomDataClick()
     }, [])
 
+    useEffect(() => {
+        onRandomDataClick()
+    }, [state.graphType]);
+
     const setData = async (update = false) => {
         const data = await getData(update);
 
@@ -71,6 +80,7 @@ export const DataPage = () => {
     };
 
     const onRandomDataClick = async () => {
+        console.log("onRandomDataClick");
         await DataPageService.updateData(dataForm.pointsQuantity,
                                         dataForm.actorsQuantity,
                                         dataForm.maxValue,
@@ -125,14 +135,16 @@ export const DataPage = () => {
 
     return <div className="dataPageContainer">
         {renderDataForm()}
-        <div className="tablesContainer">
-            <BaseTable
-                {...valuesTableProps}
-            />
-            <BaseTable
-                {...actorsTableProps}
-            />
-        </div>
+        {state.graphType !== "scatter" &&
+            (<div className="tablesContainer">
+                    <BaseTable
+                        {...valuesTableProps}
+                    />
+                    <BaseTable
+                        {...actorsTableProps}
+                    />
+                </div>)
+        }
         <div className="graphContainer">
             <Graph actorsData={actorsTableProps.data} requestCounter={state.requestCounter}
                     maxValue={dataForm.maxValue}

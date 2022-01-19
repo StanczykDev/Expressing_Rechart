@@ -132,9 +132,29 @@ const getPieData = ( pointsQuantity,
     return getPieValuesData(actorsData, pointsQuantity);
 }
 
+const getScatterData = (pointsQuantity, actorsQuantity, maxValue = VALUE_1_MAX) => {
+    const data = [];
+
+    for (let i = 0; i < actorsQuantity; i++) {
+        data.push([]);
+
+        for (let j = 0; j < pointsQuantity; j++) {
+            data[i].push({
+                x: getRandomNumber(maxValue),
+                y: getRandomNumber(maxValue),
+                z: getRandomNumber(maxValue)
+            })
+        }
+    }
+
+    return data;
+}
+
 module.exports = {
     getRandomData: getData,
     getRandomPieData: getPieData,
     getRandomNumber,
-    getRandomColor
+    getRandomColor,
+    getScatterData,
+    VALUE_1_MAX
 }
