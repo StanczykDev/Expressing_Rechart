@@ -66,7 +66,9 @@ export const Graph = ({ actorsData, requestCounter, graphType, onGraphTypeChange
         startAngleRadar: 90,
         endAngleRadar: -270,
         treeMapRatioNumerator: 4,
-        treeMapRatioDenominator: 3
+        treeMapRatioDenominator: 3,
+        clockWise: true,
+        radialBarMinAngle: 30
     }
     const [data, setData] = useState([]);
     const [localActorsData, setActorsData] = useState([]);
@@ -680,8 +682,8 @@ export const Graph = ({ actorsData, requestCounter, graphType, onGraphTypeChange
                innerRadius="10%"
                outerRadius="80%"
                data={data}
-               startAngle={180}
-               endAngle={0}
+               startAngle={state.startAngleRadar}
+               endAngle={state.endAngleRadar}
                margin={
                    {
                        top: state.marginTop,
@@ -699,8 +701,8 @@ export const Graph = ({ actorsData, requestCounter, graphType, onGraphTypeChange
 
                     return (
                    <RadialBar key={`${actor.actorName}-${index}`}
-                              minAngle={15} label={{ fill: '#000', position: 'insideStart' }}
-                              background clockWise={true} dataKey={actor.actorName}
+                              minAngle={state.radialBarMinAngle} label={{ fill: '#000', position: 'insideStart' }}
+                              background clockWise={state.clockWise} dataKey={actor.actorName}
                    onClick={() => {
                        setHiddenElement(index);
                    }}/>
