@@ -1,5 +1,5 @@
 import { hot } from "react-hot-loader/root";
-import React, { useState } from "react";
+import React from "react";
 
 import { DataPage } from "./DataPage/DataPage";
 

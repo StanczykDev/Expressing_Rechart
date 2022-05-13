@@ -798,3 +798,4 @@ export const Graph = ({ actorsData, requestCounter, graphType, onGraphTypeChange
    </div>)
 
 }
+
